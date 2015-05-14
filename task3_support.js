@@ -1,39 +1,36 @@
 
-	// Durée couverte par la frise
-	var start = 0;
-	var end = 2014;
-		var event_data = [
-			{
-				"name"			: 	"Starting Line",
-				"datetime"		: 	"2015-06-01T12:00:00.000Z",
-				"location"		: 	"New York City, NY",
-				"description"	:	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-			},
-			{
-				"name"			: 	"Chicago Checkpoint",
-				"datetime"		: 	"2015-06-04T12:00:00.000Z",
-				"location"		: 	"Chicago, IL",
-				"description"	:	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-			},
-			{
-				"name"			: 	"Corn Palace",
-				"datetime"		: 	"2015-06-05T12:00:00.000Z",
-				"location"		: 	"Mitchell, SD",
-				"description"	:	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-			},
-			{
-				"name"			: 	"Finish Line",
-				"datetime"		: 	"2015-06-09T12:00:00.000Z",
-				"location"		: 	"San Francisco, CA",
-				"description"	:	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-			},
-			{
-				"name"			: 	"Sam's Event!",
-				"datetime"		: 	"2015-06-20T12:00:00.000Z",
-				"location"		: 	"Madison, WI",
-				"description"	:	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-			}
-		];
+	var event_data = [
+		{
+			"name"			: 	"Starting Line",
+			"datetime"		: 	"2015-06-01T12:00:00.000Z",
+			"location"		: 	"New York City, NY",
+			"description"	:	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+		},
+		{
+			"name"			: 	"Chicago Checkpoint",
+			"datetime"		: 	"2015-06-04T12:00:00.000Z",
+			"location"		: 	"Chicago, IL",
+			"description"	:	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+		},
+		{
+			"name"			: 	"Corn Palace",
+			"datetime"		: 	"2015-06-05T12:00:00.000Z",
+			"location"		: 	"Mitchell, SD",
+			"description"	:	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+		},
+		{
+			"name"			: 	"Finish Line",
+			"datetime"		: 	"2015-06-09T12:00:00.000Z",
+			"location"		: 	"San Francisco, CA",
+			"description"	:	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+		},
+		{
+			"name"			: 	"Sam's Event!",
+			"datetime"		: 	"2015-06-20T12:00:00.000Z",
+			"location"		: 	"Madison, WI",
+			"description"	:	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+		}
+	];
 
 
 
@@ -59,15 +56,10 @@
 			end_date = curr_datetime;
 		}
 	}
-	console.log("Start and end")
-	console.log(start_date)
-	console.log(end_date)
-	console.log(event_data)
 
 
 
-
-	// Positionnement de la frise
+	// Positioning of SVG
 	var margin = {top: 60, right: 150, bottom: 320, left: 130},
     width = 1400 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom;
@@ -75,10 +67,7 @@
 
 
 
-
-
-
-	// Frise
+	// Format
 	var formatNumber = d3.time.format("%m-%d");
 
 	var xscale = d3.time.scale()
@@ -202,7 +191,6 @@
 			.attr("height", box_height)
 			.attr("class", "background_color")
 			.on("mouseenter", function(d){set_background(d['name'])})
-			.on("mouseout",function(d){set_background(null)})
 			.on("mouseleave",function(d){set_background(null)});
 
 
@@ -213,22 +201,30 @@
 			circles.style("fill","white");
 			return;
 		}
-		background.transition()
-			.attr("class",function(d){
-				if (d['name'] == name){
-					return "background_color_dark";}
-				else {
-					return "background_color";
-				}
-			});
-		circles
-			.style("fill",function(d){
-				if (d['name'] == name){
-					return "rgba(33, 76, 21, 0.31)";}
-				else {
-					return "white";
-				}
-			});
+		background.attr("class",function(d){
+			if (d['name'] == name){
+				return "background_color_dark";}
+			else {
+				return "background_color";
+			}
+		});
+		circles.style("fill",function(d){
+			if (d['name'] == name){
+				return "rgba(33, 76, 21, 0.31)";}
+			else {
+				return "white";
+			}
+		});
+			
+		// circles.transition()
+		// 	.delay(10)
+		// 	.style("fill",function(d){
+		// 		if (d['name'] == name){
+		// 			return "rgba(33, 76, 21, 0.31)";}
+		// 		else {
+		// 			return "white";
+		// 		}
+		// 	});
 			
 		
 
