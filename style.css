@@ -1,0 +1,55 @@
+
+		body {
+		  font: 20px sans-serif;
+		  margin-left:20px;
+		}
+
+		.axis path,
+		.axis line {
+		  fill: none;
+		  stroke: black;
+		  stroke-width: 1px;
+		  shape-rendering: crispEdges;
+		}
+
+		.y.axis path {
+		  display: none;
+		}
+
+		.y.axis line {
+		  stroke: black;
+		  stroke-dasharray: 2,2;
+		}
+		
+		.timeline_rect {
+			stroke: black;
+			stroke-width: 2px;
+			fill: white;
+		}
+
+		.axis_line {
+			stroke: black;
+			stroke-width: 2px;
+			fill: white;
+		}
+
+		.event_text {
+			font-family: "Comic Sans MS", cursive, sans-serif;
+			font-size: 11px;
+		}
+		.event_title {
+			font-family: "Comic Sans MS", cursive, sans-serif;
+			font-size: 18px;
+		}
+		.background_color {
+			fill: rgba(11, 30, 65, 0.31);
+		}
+		.background_color_dark {
+			fill: rgba(33, 76, 21, 0.31);
+		}
+
+
+		text {
+			display:block;
+			background-color: #FFFFFF;
+			}
