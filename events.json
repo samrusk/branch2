@@ -22,5 +22,11 @@
 		"datetime"		: 	"2015-06-09T12:00:00.000Z",
 		"location"		: 	"San Francisco, CA",
 		"description"	:	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+	},
+	{
+		"name"			: 	"Sam's Event!",
+		"datetime"		: 	"2015-06-18T12:00:00.000Z",
+		"location"		: 	"Madison, WI",
+		"description"	:	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
 	}
 ]

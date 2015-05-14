@@ -1,41 +1,25 @@
+$( document ).ready(function() {
 
-	var event_data = [
-		{
-			"name"			: 	"Starting Line",
-			"datetime"		: 	"2015-06-01T12:00:00.000Z",
-			"location"		: 	"New York City, NY",
-			"description"	:	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-		},
-		{
-			"name"			: 	"Chicago Checkpoint",
-			"datetime"		: 	"2015-06-04T12:00:00.000Z",
-			"location"		: 	"Chicago, IL",
-			"description"	:	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-		},
-		{
-			"name"			: 	"Corn Palace",
-			"datetime"		: 	"2015-06-05T12:00:00.000Z",
-			"location"		: 	"Mitchell, SD",
-			"description"	:	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-		},
-		{
-			"name"			: 	"Finish Line",
-			"datetime"		: 	"2015-06-09T12:00:00.000Z",
-			"location"		: 	"San Francisco, CA",
-			"description"	:	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-		},
-		{
-			"name"			: 	"Sam's Event!",
-			"datetime"		: 	"2015-06-20T12:00:00.000Z",
-			"location"		: 	"Madison, WI",
-			"description"	:	"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-		}
-	];
+	var event_data = [];
+	// $.getJSON('events.json', function(json) {
+
+	// 	event_data = json;
+	// 	save_json(json);
+ //    });
+
+    $.ajax({
+		type: "GET",
+		url: "events.json",
+		dataType: "json",
+		async: false,
+		success : function(data) {
+	                event_data = data;
+	                console.log("data" + data)
+            	}
+	});
 
 
-
-
-	//Intatiated variables
+	//Intatiate variables
 	var start_date = null;
 	var end_date = null;
 
@@ -66,14 +50,12 @@
 	
 
 
-
 	// Format
 	var formatNumber = d3.time.format("%m-%d");
 
 	var xscale = d3.time.scale()
 		.range([0, width])
 		.domain([start_date,end_date]);
-
 
 	var xAxis = d3.svg.axis()
 		.scale(xscale)
@@ -174,7 +156,10 @@
 		 	.attr("cy", height)
 		 	.attr("r", 18)
 		 	.style("background_color", "white")
-		 	.attr("class","axis_line");
+		 	.attr("class","axis_line")
+		 	.attr("id",function(d){return d['name'];})
+			.on("mouseenter", function(d){set_background(d['name'])})
+			.on("mouseleave",function(d){set_background(null)});
 
 	var background = events.append("rect")
 			
@@ -215,17 +200,6 @@
 				return "white";
 			}
 		});
-			
-		// circles.transition()
-		// 	.delay(10)
-		// 	.style("fill",function(d){
-		// 		if (d['name'] == name){
-		// 			return "rgba(33, 76, 21, 0.31)";}
-		// 		else {
-		// 			return "white";
-		// 		}
-		// 	});
-			
 		
 
 	}
@@ -250,7 +224,7 @@
 
 
 
-
+});
 
 
 
