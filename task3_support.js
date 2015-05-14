@@ -81,7 +81,7 @@ $( document ).ready(function() {
 
 
 				
-	// Affichage des titres de films	
+	// Event Box Positioning Parameters	
 	var box_width = 200;
 	var box_height = 130;
 	var line_length = 50
