@@ -1,7 +1,8 @@
 $( document ).ready(function() {
 
 	var event_data = [];
-	var test_data = []
+	var test_data = [];
+	var testing = [];
 
 
     $.ajax({
@@ -11,8 +12,6 @@ $( document ).ready(function() {
 		async: false,
 		success : function(data) {
 	                event_data = data;
-	                console.log("data")
-	                console.log(data)
             	}
 	});
 
@@ -29,10 +28,16 @@ $( document ).ready(function() {
 	});
 
     window_index = 0;
-	num_signals = test_data['window_test'][window_index].length
-	signal_data = test_data['window_test'][window_index]
+	num_signals = test_data['window_test'][window_index].length;
+	signal_data = test_data['window_test'][window_index];
 	pred_prob = test_data['proba'];
 	y_test = test_data['y_test'];
+	testing = test_data['window_test'];
+
+	console.log("real label")
+	console.log(y_test)
+	console.log("pred label")
+	console.log(pred_prob)
 
 
 
@@ -126,8 +131,7 @@ $( document ).ready(function() {
 
 	real_label = y_test[window_index];
 	pred_label = pred_prob[window_index];
-
-	svg.append("text")
+	label_text = svg.append("text")
 		.attr("class","country-title")
 		.attr("transform", "translate(-10,15)")
 		.attr("fill", "#777")
@@ -210,7 +214,7 @@ $( document ).ready(function() {
 				min = min*0.9;
 			}
 			samp_rate = signal_data[i].length/window_length;
-			charts.push(new Chart({
+			var curr_chart = new Chart({
 				signal_data: signal_data,
 				samp_rate: samp_rate,
 				id: i,
@@ -222,7 +226,8 @@ $( document ).ready(function() {
 				svg: svg,
 				margin: margin,
 				showBottomAxis: (i == num_signals - 1)
-			}));
+			});
+			charts.push(curr_chart);
 			
 		}
 	}
@@ -311,7 +316,7 @@ $( document ).ready(function() {
 
 
 		/* We've created everything, let's actually add it to the page */
-		this.chartContainer.append("path")
+		this.area_chart = this.chartContainer.append("path")
 		.data([signal_data[this.id]])
 		.attr("class", "chart")
 		.attr("clip-path", "url(#clip-" + this.id + ")")
@@ -374,6 +379,8 @@ $( document ).ready(function() {
 		.attr("transform", "translate(10,15)")
 		.attr("fill", "#777")
 		.text(this.name);
+
+		// return this.area_chart;
 
 
 
@@ -455,23 +462,28 @@ $( document ).ready(function() {
 			return html;
 	}
 
-
+	function update_charts(signal_data){
+		for (var ii in charts){
+			var curr = charts[ii];
+			curr.area_chart
+				.data([signal_data[curr.id]])
+				.attr("d", curr.area);
+		}
+	}
 
 	$('#prev_window').on('click', function (e) {
-		console.log("prev_window click");
-		window_index-=1;
+		if (window_index > 0) window_index-=1 ;
 		signal_data = test_data['window_test'][window_index];
-		draw_charts();
-
-		
-	})
+		update_charts(signal_data);
+		label_text.text("Real Label: " + y_test[window_index] + " Pred Label: " + pred_prob[window_index]);
+	});
 	$('#next_window').on('click', function (e) {
-		console.log("next_window click");
-		window_index+=1
-		signal_data = test_data['window_test'][window_index]
-		draw_charts();
-		
-	})
+		if (window_index < y_test.length) window_index+=1 ;
+		signal_data = test_data['window_test'][window_index];
+		update_charts(signal_data);
+		label_text.text("Real Label: " + y_test[window_index] + " Pred Label: " + pred_prob[window_index]);
+	});
+
 
 
 
