@@ -14,7 +14,21 @@ $( document ).ready(function() {
 		async: false,
 		success : function(data) {
 	                event_data = data;
-	                console.log("data" + data)
+	                console.log("data")
+	                console.log(data)
+            	}
+	});
+
+
+    $.ajax({
+		type: "GET",
+		url: "/Users/samrusk/Downloads/json_data.txt",
+		dataType: "json",
+		async: false,
+		success : function(data) {
+	                window_data = data;
+	                console.log("window_data")
+	                console.log(window_data)
             	}
 	});
 

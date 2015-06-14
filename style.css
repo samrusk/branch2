@@ -4,6 +4,10 @@
 		  margin-left:20px;
 		}
 
+		g.plots path.chart {
+			fill: rgba(127,201,127,0.5);
+		}
+
 		.axis path,
 		.axis line {
 		  fill: none;
