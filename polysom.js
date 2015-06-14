@@ -2,11 +2,7 @@ $( document ).ready(function() {
 
 	var event_data = [];
 	var test_data = []
-	// $.getJSON('events.json', function(json) {
 
-	// 	event_data = json;
-	// 	save_json(json);
- //    });
 
     $.ajax({
 		type: "GET",
@@ -20,7 +16,6 @@ $( document ).ready(function() {
             	}
 	});
 
-
     $.ajax({
 		type: "GET",
 		url: "/Users/samrusk/Downloads/json_data.txt",
@@ -33,8 +28,12 @@ $( document ).ready(function() {
             	}
 	});
 
-	num_signals = test_data['window_test'][0].length
-	signal_data = test_data['window_test'][0]
+    window_index = 0;
+	num_signals = test_data['window_test'][window_index].length
+	signal_data = test_data['window_test'][window_index]
+	pred_prob = test_data['proba'];
+	y_test = test_data['y_test'];
+
 
 
 	//Intatiate variables
@@ -125,7 +124,14 @@ $( document ).ready(function() {
 
 	/*   End Chart Creation Section    */
 
+	real_label = y_test[window_index];
+	pred_label = pred_prob[window_index];
 
+	svg.append("text")
+		.attr("class","country-title")
+		.attr("transform", "translate(-10,15)")
+		.attr("fill", "#777")
+		.text("Real Label: " + real_label + " Pred Label: " + pred_label);
 
 	/* Start Brush Section   */
 
@@ -189,38 +195,36 @@ $( document ).ready(function() {
 	/* Start Chart Section */
 
 	signal_names = ['a','b','c','d','e','f','g','h','i','j','k','m'];
-	console.log("signal data");
-	console.log(signal_data)
 	charts = [];
+	draw_charts();
 
-	for(var i = 0; i < num_signals; i++){
-
-		
-		max = 1.1*Math.max.apply(null, signal_data[i]);
-		min = Math.min.apply(null, signal_data[i]);
-		if (min<0){
-			min = min*1.1;
-		} else if (min == 0) {
-			min = -1;
-		} else {
-			min = min*0.9;
+	function draw_charts(){
+		for(var i = 0; i < num_signals; i++){
+			max = 1.1*Math.max.apply(null, signal_data[i]);
+			min = Math.min.apply(null, signal_data[i]);
+			if (min<0){
+				min = min*1.1;
+			} else if (min == 0) {
+				min = -1;
+			} else {
+				min = min*0.9;
+			}
+			samp_rate = signal_data[i].length/window_length;
+			charts.push(new Chart({
+				signal_data: signal_data,
+				samp_rate: samp_rate,
+				id: i,
+				name: signal_names[i],
+				width: width,
+				height: height * (1 / num_signals),
+				max_data: max,
+				min_data: min,
+				svg: svg,
+				margin: margin,
+				showBottomAxis: (i == num_signals - 1)
+			}));
+			
 		}
-		samp_rate = signal_data[i].length/window_length;
-		console.log(i)
-		charts.push(new Chart({
-			signal_data: signal_data,
-			samp_rate: samp_rate,
-			id: i,
-			name: signal_names[i],
-			width: width,
-			height: height * (1 / num_signals),
-			max_data: max,
-			min_data: min,
-			svg: svg,
-			margin: margin,
-			showBottomAxis: (i == num_signals - 1)
-		}));
-		
 	}
 
 
@@ -369,7 +373,7 @@ $( document ).ready(function() {
 		.attr("class","country-title")
 		.attr("transform", "translate(10,15)")
 		.attr("fill", "#777")
-		.text(this.name)
+		.text(this.name);
 
 
 
@@ -385,7 +389,6 @@ $( document ).ready(function() {
 		console.time(this.name);
 		this.chartContainer.select("path").attr("d", this.area);
 		console.timeEnd(this.name);
-		console.log(this.samp_rate);
 		// console.time('xaxis top');
 		this.chartContainer.select(".x.axis.top").call(this.xAxisBottom);
 		// console.timeEnd('xaxis top');
@@ -451,6 +454,24 @@ $( document ).ready(function() {
 				description+"</div>";
 			return html;
 	}
+
+
+
+	$('#prev_window').on('click', function (e) {
+		console.log("prev_window click");
+		window_index-=1;
+		signal_data = test_data['window_test'][window_index];
+		draw_charts();
+
+		
+	})
+	$('#next_window').on('click', function (e) {
+		console.log("next_window click");
+		window_index+=1
+		signal_data = test_data['window_test'][window_index]
+		draw_charts();
+		
+	})
 
 
 
