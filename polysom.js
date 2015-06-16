@@ -28,11 +28,19 @@ $( document ).ready(function() {
 	});
 
     window_index = 0;
-	num_signals = test_data['window_test'][window_index].length;
-	signal_data = test_data['window_test'][window_index];
-	pred_prob = test_data['proba'];
-	y_test = test_data['y_test'];
-	testing = test_data['window_test'];
+    X_out = test_data['X_out']
+	num_signals = test_data['window_out'][window_index].length;
+	signal_data = test_data['window_out'][window_index];
+	pred_prob = test_data['prob_out'];
+	y_test = test_data['y_out'];
+	testing = test_data['window_out'];
+	signal_names = test_data['headers']['label']
+
+	// Adding two Signals
+	num_signals = test_data['window_out'][window_index].length + 2;
+	signal_names.shift(); //Removes First Eleemnt of Array
+	signal_names.push("Log10(Features)")
+	signal_names.push("Log10(Hist(Features))")
 
 	console.log("real label")
 	console.log(y_test)
@@ -71,6 +79,11 @@ $( document ).ready(function() {
 		}
 	}
 
+	start_date = new Date(2015,0,1);
+	end_date = new Date(2015,0,1);
+	end_date.setSeconds(start_date.getSeconds() + window_length);
+
+
 
 
 	// Positioning of SVG
@@ -95,7 +108,7 @@ $( document ).ready(function() {
 
 	var svg = d3.select("body").append("svg")
 		.attr("width", width + margin.left + margin.right)
-		.attr("height", height + margin.top + margin.bottom)
+		.attr("height", height + margin.top + margin.bottom+300)
 		.append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -135,7 +148,7 @@ $( document ).ready(function() {
 		.attr("class","country-title")
 		.attr("transform", "translate(-10,15)")
 		.attr("fill", "#777")
-		.text("Real Label: " + real_label + " Pred Label: " + pred_label);
+		.text("Window Index: " + window_index +" Real Label: " + real_label + " Pred Label: " + pred_label);
 
 	/* Start Brush Section   */
 
@@ -198,21 +211,63 @@ $( document ).ready(function() {
 
 	/* Start Chart Section */
 
-	signal_names = ['a','b','c','d','e','f','g','h','i','j','k','m'];
+	
+	// Calculate Histogram
+	var X_new = [];
+	function sortFloat(a,b) { return a - b; }
+	var num_patients = X_out.length;
+	var num_features = X_out[0].length;
+	var feature_hist = Array.apply(null, Array(num_features)).map(Number.prototype.valueOf,0);
+	for (var i=0;i < num_patients;i++){
+		X_new.push([]);
+		for (var j=0;j < num_features;j++){
+			feature_hist[j] += X_out[i][j];
+
+			if (X_out[i][j] > 0 ){
+				// X_out[i][j]  = Math.log(X_out[i][j] );
+				X_new[i][j]  = Math.log(X_out[i][j] );
+			} else if(X_out[i][j] < 0) {
+				// X_out[i][j]  = -1*Math.log(Math.abs(X_out[i][j]));
+				X_new[i][j]  = -1*Math.log(Math.abs(X_out[i][j]));
+			}
+
+		}
+	}
+
+	// feature_hist.sort(sortFloat);
+
+	for (var i=0;i<num_features;i++){
+		if (feature_hist[i] > 0 ){
+			feature_hist[i] = Math.log(feature_hist[i]);
+		} else if(feature_hist[i] < 0) {
+			feature_hist[i] = -1*Math.log(Math.abs(feature_hist[i]));
+		}
+	}
+
+
+	// feature_hist.sort(sortFloat);
+	signal_data.push(X_out[0]);
+	signal_data.push(feature_hist);
+
+	console.log()
 	charts = [];
 	draw_charts();
 
+
 	function draw_charts(){
 		for(var i = 0; i < num_signals; i++){
+			// console.log("draw_charts")
 			max = 1.1*Math.max.apply(null, signal_data[i]);
 			min = Math.min.apply(null, signal_data[i]);
 			if (min<0){
-				min = min*1.1;
+				min = min*1.3;
 			} else if (min == 0) {
 				min = -1;
 			} else {
 				min = min*0.9;
 			}
+			// console.log("length")
+			// console.log(signal_data[i].length);
 			samp_rate = signal_data[i].length/window_length;
 			var curr_chart = new Chart({
 				signal_data: signal_data,
@@ -235,6 +290,7 @@ $( document ).ready(function() {
 
 	
 	function Chart(options){
+		console.log("start chart");
 		this.signal_data = options.signal_data;
 		this.width = options.width;
 		this.height = options.height;
@@ -267,6 +323,7 @@ $( document ).ready(function() {
 		.domain([this.min_data,this.max_data]);
 		var xS = this.xScale;
 		var yS = this.yScale;
+
 
 
 	/* 
@@ -343,7 +400,7 @@ $( document ).ready(function() {
 		// });
 
 
-
+		console.log("end chart");
 
 		this.xAxisTop = d3.svg.axis().scale(this.xScale).orient("bottom");
 		this.xAxisBottom = d3.svg.axis().scale(this.xScale).orient("top");
@@ -365,14 +422,14 @@ $( document ).ready(function() {
 			// .call(this.xAxisBottom);
 		}  
 		
-		this.yAxis = d3.svg.axis().scale(this.yScale).orient("left").ticks(4);
+		this.yAxisRef = d3.svg.axis().scale(this.yScale).orient("left").ticks(3);
 
 
 		
-		this.chartContainer.append("g")
+		this.yAxis = this.chartContainer.append("g")
 		.attr("class", "y axis")
 		.attr("transform", "translate(-15,0)")
-		.call(this.yAxis);
+		.call(this.yAxisRef);
 
 		this.chartContainer.append("text")
 		.attr("class","country-title")
@@ -465,23 +522,43 @@ $( document ).ready(function() {
 	function update_charts(signal_data){
 		for (var ii in charts){
 			var curr = charts[ii];
+
+			var max = Math.max.apply(null,signal_data[curr.id]);
+			var min = Math.min.apply(null,signal_data[curr.id]);
+			if (max>0) {max*=1.2;} else {max*=0.8;}
+			if (min<0) {min*=1.2;} else {min*=0.8;}
+			var yS = curr.yScale
+				.domain([min,max]);
+			curr.area
+				.y1(function(d,i) {return yS(d);});
 			curr.area_chart
 				.data([signal_data[curr.id]])
 				.attr("d", curr.area);
+
+
+			curr.yAxisRef = d3.svg.axis().scale(yS).orient("left").ticks(2);
+			curr.yAxis.call(curr.yAxisRef);
+
 		}
 	}
 
 	$('#prev_window').on('click', function (e) {
 		if (window_index > 0) window_index-=1 ;
-		signal_data = test_data['window_test'][window_index];
+		signal_data = test_data['window_out'][window_index];
+
+		signal_data.push(X_out[window_index]);
+		signal_data.push(feature_hist);
 		update_charts(signal_data);
-		label_text.text("Real Label: " + y_test[window_index] + " Pred Label: " + pred_prob[window_index]);
+		label_text.text("Window Index: " + window_index +" Real Label: " + test_data['y_out'][window_index]+ " Pred Label: " + test_data['prob_out'][window_index]);
 	});
 	$('#next_window').on('click', function (e) {
-		if (window_index < y_test.length) window_index+=1 ;
-		signal_data = test_data['window_test'][window_index];
+		if (window_index < y_test.length - 1) window_index+=1 ;
+		signal_data = test_data['window_out'][window_index];
+
+		signal_data.push(X_out[window_index]);
+		signal_data.push(feature_hist);
 		update_charts(signal_data);
-		label_text.text("Real Label: " + y_test[window_index] + " Pred Label: " + pred_prob[window_index]);
+		label_text.text("Window Index: " + window_index +" Real Label: " + test_data['y_out'][window_index]+ " Pred Label: " + test_data['prob_out'][window_index]);
 	});
 
 

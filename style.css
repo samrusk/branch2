@@ -7,6 +7,12 @@
 		g.plots path.chart {
 			fill: rgba(127,201,127,0.5);
 		}
+
+		g.plots path.chart {
+			fill: rgba(127,201,127,0);
+			stroke: steelblue;
+			stroke-opacity: 1;
+		}
 		.country-title {
 			display:block;
 			background-color: #FFFFFF;
